@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetPulse | Smart Network Scanner & Topology</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="dark-theme">
+  <!-- Background Glow FX -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <div class="app-layout">
+    <!-- Top Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <circle cx="12" cy="20" r="1"></circle>
+          </svg>
+        </div>
+        <div>
+          <h1>NetPulse <span class="badge-version">v2.4</span></h1>
+          <p class="subtitle">Intelligent LAN Device Discovery & Inspector</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="network-badge" id="networkPill">
+          <span class="status-dot"></span>
+          <span id="gatewayPillText">Gateway: Detecting...</span>
+        </div>
+        <div class="btn-group">
+          <button id="btnExportJson" class="btn btn-secondary btn-sm" title="Download JSON report">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            JSON
+          </button>
+          <button id="btnExportCsv" class="btn btn-secondary btn-sm" title="Download CSV report">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            CSV
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Metrics Summary Bar -->
+    <section class="stats-grid">
+      <div class="stat-card" data-category="all">
+        <div class="stat-icon icon-total">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Total Connected</span>
+          <span class="stat-value" id="statTotal">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card" data-category="gateway">
+        <div class="stat-icon icon-modem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="13" width="20" height="8" rx="2"></rect><path d="M6 9v4"></path><path d="M10 9v4"></path><path d="M18 17h.01"></path><path d="M14 17h.01"></path><path d="M2 5h20"></path></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Modem / Gateway</span>
+          <span class="stat-value" id="statGateway">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card" data-category="phones">
+        <div class="stat-icon icon-phones">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Smartphones / Tablets</span>
+          <span class="stat-value" id="statPhones">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card" data-category="pcs">
+        <div class="stat-icon icon-pcs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">PCs & Laptops</span>
+          <span class="stat-value" id="statPCs">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card" data-category="iot">
+        <div class="stat-icon icon-iot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"></path><path d="M20 12v8H4v-8"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Smart TV & IoT</span>
+          <span class="stat-value" id="statIoT">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toolbar: Scan Controls, Subnet, Mode Selector -->
+    <section class="toolbar-card">
+      <div class="toolbar-left">
+        <button id="btnScan" class="btn btn-primary btn-glow">
+          <span class="btn-spinner" id="scanSpinner"></span>
+          <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="m10 15 5-3-5-3v6Z" fill="currentColor"></path></svg>
+          <span id="btnScanText">Start Network Scan</span>
+        </button>
+
+        <div class="mode-toggle" title="Switch between real physical scan and university lab simulation mode">
+          <button class="toggle-option active" data-mode="real" id="optReal">
+            <span>Live Scan</span>
+          </button>
+          <button class="toggle-option" data-mode="demo" id="optDemo">
+            <span class="badge-lab">Lab Demo</span>
+          </button>
+        </div>
+
+        <div class="input-group">
+          <label for="subnetInput">Subnet:</label>
+          <input type="text" id="subnetInput" placeholder="192.168.1.0/24" value="192.168.1.0/24">
+        </div>
+      </div>
+
+      <div class="toolbar-right">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="filterInput" placeholder="Filter by Name, IP, Vendor...">
+        </div>
+
+        <div class="view-switcher">
+          <button class="view-btn active" id="btnViewGrid" title="Card Grid View">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          </button>
+          <button class="view-btn" id="btnViewTopology" title="Network Topology Map View">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><circle cx="6" cy="6" r="2"></circle><circle cx="18" cy="6" r="2"></circle><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><line x1="12" y1="9" x2="12" y2="6"></line><line x1="12" y1="15" x2="12" y2="18"></line><line x1="9" y1="12" x2="6" y2="12"></line><line x1="15" y1="12" x2="18" y2="12"></line></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scan Progress Bar -->
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-header">
+        <span class="progress-status" id="progressStatus">Sweeping network...</span>
+        <span class="progress-percent" id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <div class="filter-tabs">
+      <button class="tab-btn active" data-filter="all">All Devices (<span id="tabCountAll">0</span>)</button>
+      <button class="tab-btn" data-filter="gateway">Modems & Routers (<span id="tabCountGateway">0</span>)</button>
+      <button class="tab-btn" data-filter="phone">Smartphones (<span id="tabCountPhone">0</span>)</button>
+      <button class="tab-btn" data-filter="pc">Computers (<span id="tabCountPC">0</span>)</button>
+      <button class="tab-btn" data-filter="tv">Smart TVs (<span id="tabCountTV">0</span>)</button>
+      <button class="tab-btn" data-filter="iot">IoT & Printers (<span id="tabCountIoT">0</span>)</button>
+    </div>
+
+    <!-- Main Content Area: Grid View & Topology View -->
+    <main class="main-content">
+      <!-- Grid View -->
+      <section class="devices-grid" id="devicesGrid">
+        <!-- Rendered dynamically via JavaScript -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-radar">
+            <div class="pulse-ring"></div>
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="2" x2="12" y2="22"></line>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <circle cx="12" cy="12" r="6"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+          </div>
+          <h3>Ready to Scan Your Network</h3>
+          <p>Click "Start Network Scan" above to discover active devices on your LAN,<br>or switch to "Lab Demo" to preview with simulated campus devices.</p>
+        </div>
+      </section>
+
+      <!-- Topology View (Interactive Canvas) -->
+      <section class="topology-view hidden" id="topologyView">
+        <div class="topology-header">
+          <span>LAN Topology Visualizer (Gateway Hub & Radial Nodes)</span>
+          <span class="topology-tip">💡 Hover over any node in the map to see its floating card</span>
+        </div>
+        <canvas id="topologyCanvas"></canvas>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div>
+        <strong>NetPulse</strong> &bull; University Network Scanner &amp; Hardware Fingerprinter
+      </div>
+      <div id="footerTimestamp">Ready for scan</div>
+    </footer>
+  </div>
+
+  <!-- FLOATING STYLE INFO CARD (Dynamic Popover) -->
+  <div class="floating-info-card" id="floatingInfoCard">
+    <div class="fic-header">
+      <div class="fic-icon-wrap" id="ficIconWrap">
+        <!-- Injected icon -->
+      </div>
+      <div class="fic-title-wrap">
+        <h4 id="ficTitle">Device Name</h4>
+        <div class="fic-badges">
+          <span class="badge" id="ficBadgeType">Device Type</span>
+          <span class="badge badge-outline" id="ficBadgeOS">OS Estimate</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fic-divider"></div>
+
+    <div class="fic-grid">
+      <div class="fic-row">
+        <span class="fic-key">IP Address</span>
+        <span class="fic-val text-mono" id="ficIP">192.168.1.1</span>
+      </div>
+      <div class="fic-row">
+        <span class="fic-key">MAC Address</span>
+        <span class="fic-val text-mono" id="ficMAC">00:00:00:00:00:00</span>
+      </div>
+      <div class="fic-row">
+        <span class="fic-key">Manufacturer</span>
+        <span class="fic-val highlight-val" id="ficVendor">Vendor Name</span>
+      </div>
+      <div class="fic-row">
+        <span class="fic-key">Network Hostname</span>
+        <span class="fic-val text-mono" id="ficHostname">hostname.local</span>
+      </div>
+      <div class="fic-row">
+        <span class="fic-key">Latency (RTT)</span>
+        <span class="fic-val" id="ficLatency">
+          <span class="latency-dot"></span>
+          <span id="ficLatencyVal">1.2 ms</span>
+        </span>
+      </div>
+      <div class="fic-row">
+        <span class="fic-key">Gateway / Modem</span>
+        <span class="fic-val" id="ficGateway">No</span>
+      </div>
+    </div>
+
+    <div class="fic-ports-section" id="ficPortsSection">
+      <div class="fic-section-title">Open Services & Ports:</div>
+      <div class="fic-ports-list" id="ficPortsList">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
